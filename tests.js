@@ -153,7 +153,7 @@ describe("bot tests", function() {
 		const field = [
 			[0, 0, 0, 0, 0],
 			[0, 3, 0, 0, 0],
-			[0, 0, 0, 0, 0],
+			[0, 0, 2, 0, 0],
 			[0, 0, 0, 0, 0],
 			[0, 0, 0, 0, 0]
 		];
@@ -175,16 +175,16 @@ describe("bot tests", function() {
 		
 		var botInstance = new Bot(reader);
 		
-		expect(botInstance.getFieldscore(field, enemy, unitMiss)).toEqual(9);
-		expect(botInstance.getFieldscore(field, enemy, unitHit)).toEqual(1000);
+		expect(botInstance.getFieldscore(field, enemy, unitMiss)).toEqual(13);
+		expect(botInstance.getFieldscore(field, enemy, unitHit)).toEqual(1013);
 	});
 	
 	it ('should prioritize taking 3-height points (integration)', function() {
 		const field = [
 			[0, 0, 0, 0, 0],
 			[0, 3, 0, 0, 0],
-			[0, 0, 0, 0, 0],
-			[0, 0, 0, 0, 0],
+			[0, 0, 2, 0, 0],
+			[0, 0, 1, 0, 0],
 			[0, 0, 0, 0, 0]
 		];
 		
@@ -210,7 +210,7 @@ describe("bot tests", function() {
 		const actionBuild = {
 			type: 'MOVE&BUILD',
 			index: 0,
-			dir1: 'N',
+			dir1: 'S',
 			dir2: 'SW'
 		};
 		
@@ -269,4 +269,35 @@ describe("bot tests", function() {
 		expect(botInstance.getFieldscore(field, enemy, unitFree)).toEqual(0);
 		expect(botInstance.getFieldscore(field, enemy, unitLocked)).toEqual(-10000);
 	});
+
+	it('should understand steep borders as locked configurations', function(){
+		const field = [
+			[0, 0, 0, 0, 0],
+			[2, 0, 3, 4, 3],
+			[1, 0, 3, 1, 4],
+			[0, 0, 3, 3, 4],
+			[2, 0, 0, 0, 0]
+		];
+		
+		const unitLocked = {
+			x:3, y: 2
+		};
+
+		const unitFree = {
+			x:0, y: 3
+		};
+		
+		const enemy = {
+			x: 0,
+			y: 0
+		};
+		
+		var reader = new FakeReader({});
+		
+		var botInstance = new Bot(reader);
+		
+		expect(botInstance.getFieldscore(field, enemy, unitFree)).toEqual(0);
+		expect(botInstance.getFieldscore(field, enemy, unitLocked)).toEqual(-9999);
+	});
+	
 });
