@@ -25,6 +25,10 @@ class Bot {
 		
 		let locked = true,
 			height1;
+			
+		let myHeight = field[me.y][me.x];
+		
+		score += Math.pow(myHeight, 2)
 		
 		for (var i = -1; i <= 1; i++) {
 			for (var j = -1; j <= 1 ;j++) {
@@ -35,7 +39,7 @@ class Bot {
 				}
 
 		
-				if (height1 <= 3 && height1 >= 0 && i !== 0 && j !== 0) {
+				if (Math.abs(height1 - myHeight) <= 1 && i !== 0 && j !== 0) {
 					locked = false;
 					score += Math.pow(height1, 2);
 				}
