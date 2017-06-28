@@ -7,7 +7,8 @@ module.exports = function (config) {
 
         // list of files / patterns to load in the browser
         files: [
-          'bot.js',
+          'FakeReader.js',
+          'Bot.js',
           'tests.js'
         ],
 
@@ -16,7 +17,7 @@ module.exports = function (config) {
         ],
 
         preprocessors: {
-			'bot.js': ['browserify']
+			'*.js': ['browserify']
 		},
 		
 		browserify: {
@@ -86,6 +87,7 @@ module.exports = function (config) {
         plugins: [
           'karma-jasmine',
           'karma-phantomjs-launcher',
+		  'browserify',
 		  'karma-browserify',
           'karma-coverage',
           'karma-junit-reporter',
