@@ -1,8 +1,3 @@
-/**
- * Auto-generated code below aims at helping you parse
- * the standard input according to the problem statement.
- **/
-
 class Bot {
 	constructor(reader, outFunc, logFunc) {
 		this.reader = reader;
@@ -119,11 +114,13 @@ class Bot {
 	
 	runCycle() {
 		this.data = this.reader.readData();
-		this.log(JSON.stringify(this.data.legalActions));
-		
-		let rangedActions = this.sortActions(this.data.legalActions);
-		
-		this.giveCommand(this.buildCommand(rangedActions[0]));
+		let myUnits = this.data.units.filter(e => e.mine);
+		this.log(myUnits);
+		myUnits.forEach(unit => {
+			let rangedActions = this.sortActions(this.data.legalActions.filter(action => action.index == unit.index));
+			
+			this.giveCommand(this.buildCommand(rangedActions[0]));
+		})
 	}
 }
 
