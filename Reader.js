@@ -28,6 +28,7 @@ class Reader {
 			data.units.push({
 				x: unitX,
 				y: unitY,
+				index: j,
 				mine: true
 			});
 		}

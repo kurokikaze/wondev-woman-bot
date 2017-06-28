@@ -191,12 +191,14 @@ describe("bot tests", function() {
 		const unitStart = {
 			x:2, 
 			y: 2,
+			index: 0,
 			mine: true
 		};
 
 		const enemy = {
 			x: 0,
 			y: 0,
+			index: 4,
 			mine: false
 		};
 		

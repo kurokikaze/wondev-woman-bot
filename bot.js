@@ -76,7 +76,7 @@ class Bot {
 		};
 		
 		let analyzer = (action) => {
-			let me = this.data.units.filter(e => e.mine)[0];
+			let me = this.data.units.filter(e => e.index == action.index)[0];
 			let enemy = this.data.units.filter(e => !e.mine)[0];
 			let newMePosition = this.getMovedPoint(me, action.dir1);
 			
