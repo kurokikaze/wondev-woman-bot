@@ -56,7 +56,8 @@ class Reader {
 				type: atype,
 				index: index,
 				dir1: dir1,
-				dir2: dir2
+				dir2: dir2,
+				sig: atype + " " + index + " " + dir1 + " " + dir2
 			});
 		}
 		

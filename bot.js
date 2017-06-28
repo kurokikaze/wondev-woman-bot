@@ -8,7 +8,10 @@ class Bot {
 	}
 	
 	buildCommand(action) {
-		return action.type + ' ' + action.index + ' ' + action.dir1 + ' ' + action.dir2;
+		let commandBody = action.type + ' ' + action.index + ' ' + action.dir1 + ' ' + action.dir2;
+		if (action.sig) { command.body += ' "' + action.sig + '"'; }
+		
+		return commandBody;
 	}
 	
 	distance(obj1, obj2) { 
@@ -65,6 +68,12 @@ class Bot {
 	sortActions(actions) {
 		let applier = (action) => {
 			let me = this.data.units.filter(e => e.index == action.index)[0];
+			let newMe = this.getMovedPoint(me, action.dir1);
+			let invalidTarget = this.data.units.filter(e => (e.x == newMe.x && e.y == newMe.y));
+		
+			if (invalidTarget.length > 0) {
+				action.type = 'PUSH&BUILD';
+			}
 			
 			let newField = this.applyAction(this.data.rows, me, this.data.units, action);
 			if (newField) {
@@ -108,12 +117,6 @@ class Bot {
 		let newMe = this.getMovedPoint(me, action.dir1);
 
 		let target = this.getMovedPoint(newMe, action.dir2);
-		
-		let invalidTarget = enemies.filter(e => ((e.x == newMe.x && e.y == newMe.y) || (e.x == target.x && e.y == target.y && e != me)));
-		
-		if (invalidTarget.length > 0) {
-			return null;
-		}
 		
 		newField[target.y][target.x]++;
 		
