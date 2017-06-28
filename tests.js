@@ -179,6 +179,67 @@ describe("bot tests", function() {
 		expect(botInstance.getFieldscore(field, enemy, unitHit)).toEqual(1000);
 	});
 	
+	it ('should prioritize taking 3-height points (integration)', function() {
+		const field = [
+			[0, 0, 0, 0, 0],
+			[0, 3, 0, 0, 0],
+			[0, 0, 0, 0, 0],
+			[0, 0, 0, 0, 0],
+			[0, 0, 0, 0, 0]
+		];
+		
+		const unitStart = {
+			x:2, 
+			y: 2,
+			mine: true
+		};
+
+		const enemy = {
+			x: 0,
+			y: 0,
+			mine: false
+		};
+		
+		const actionTake = {
+			type: 'MOVE&BUILD',
+			index: 0,
+			dir1: 'NW',
+			dir2: 'E'
+		};
+		
+		const actionBuild = {
+			type: 'MOVE&BUILD',
+			index: 0,
+			dir1: 'N',
+			dir2: 'SW'
+		};
+		
+		const legalActions = [
+			actionBuild,
+			actionTake
+		];
+		
+		const units = [
+			unitStart,
+			enemy
+		];
+
+		var reader = new FakeReader({
+			rows: field,
+			units,
+			legalActions			
+		});
+		
+		let command = null;
+		var printFunc = function(out) { command = out };
+		
+		var botInstance = new Bot(reader, printFunc);
+		
+		botInstance.runCycle();
+		
+		expect(command).toEqual('MOVE&BUILD 0 NW E');		
+	});
+	
 	it('should discourage locked configurations', function(){
 		const field = [
 			[0, 0, 0, 0, 0],

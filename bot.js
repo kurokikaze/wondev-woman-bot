@@ -4,9 +4,12 @@
  **/
 
 class Bot {
-	constructor(reader) {
+	constructor(reader, outFunc, logFunc) {
 		this.reader = reader;
 		this.data = null;
+		
+		this.print = outFunc ? outFunc : function(){};
+		this.log = logFunc ? logFunc : function(){};
 	}
 	
 	buildCommand(action) {
@@ -15,7 +18,7 @@ class Bot {
 	
 	distance(obj1, obj2) { 
 		return Math.sqrt(Math.pow(obj1.x - obj2.x, 2) + Math.pow(obj1.y - obj2.y, 2)) 
-	};
+	}
 	
 	getFieldscore(field, enemy, me) {
 		let score = 0;
@@ -40,7 +43,6 @@ class Bot {
 			}
 		}
 
-		console.log('Point:', me, field[me.y][me.x]);
 		if (field[me.y][me.x] === 3) {			
 			score += 1000;
 		}
@@ -63,15 +65,15 @@ class Bot {
 	
 	sortActions(actions) {
 		let applier = (action) => {
-			let me = units.filter(e => e.mine)[0];
-			action.result = applyAction(rows, me, action);
+			let me = this.data.units.filter(e => e.mine)[0];
+			action.result = this.applyAction(this.data.rows, me, action);
 			
 			return action;
 		};
 		
 		let analyzer = (action) => {
-			let me = units.filter(e => e.mine)[0];
-			let enemy = units.filter(e => !e.mine)[0];
+			let me = this.data.units.filter(e => e.mine)[0];
+			let enemy = this.data.units.filter(e => !e.mine)[0];
 			let newMePosition = this.getMovedPoint(me, action.dir1);
 			
 			action.score = this.getFieldscore(action.result, enemy, newMePosition);
@@ -80,7 +82,7 @@ class Bot {
 		
 		let analyzedActions = actions.map(applier).map(analyzer);
 		
-		let sortedActions = sortScores(analyzedActions);
+		let sortedActions = this.sortScores(analyzedActions);
 		return sortedActions;
 	}
 	
@@ -98,7 +100,6 @@ class Bot {
 	
 	applyAction(field, me, action) {
 		let newField = JSON.parse(JSON.stringify(field));
-		console.log(action.dir1, action.dir2, newField);
 		let newMe = this.getMovedPoint(me, action.dir1);
 
 		let target = this.getMovedPoint(newMe, action.dir2);
@@ -109,11 +110,12 @@ class Bot {
 	}
 	
 	giveCommand(command) {
-		print(command);
+		this.print(command);
 	}
 	
 	runCycle() {
 		this.data = this.reader.readData();
+		this.log(JSON.stringify(this.data.legalActions));
 		
 		let rangedActions = this.sortActions(this.data.legalActions);
 		
