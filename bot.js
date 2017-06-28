@@ -64,10 +64,9 @@ class Bot {
 	
 	sortActions(actions) {
 		let applier = (action) => {
-			let me = this.data.units.filter(e => e.mine)[0];
-			let enemies = this.data.units.filter(e => !e.mine);
+			let me = this.data.units.filter(e => e.index == action.index)[0];
 			
-			let newField = this.applyAction(this.data.rows, me, enemies, action);
+			let newField = this.applyAction(this.data.rows, me, this.data.units, action);
 			if (newField) {
 				action.result = newField;
 				
@@ -110,7 +109,7 @@ class Bot {
 
 		let target = this.getMovedPoint(newMe, action.dir2);
 		
-		let invalidTarget = enemies.filter(e => (e.x == target.x && e.y == target.y));
+		let invalidTarget = enemies.filter(e => ((e.x == newMe.x && e.y == newMe.y) || (e.x == target.x && e.y == target.y && e != me)));
 		
 		if (invalidTarget.length > 0) {
 			return null;
@@ -127,6 +126,8 @@ class Bot {
 	
 	runCycle() {
 		this.data = this.reader.readData();
+		this.log(JSON.stringify(this.data.units));
+		
 		this.data.units.filter(e => e.mine).forEach(unit => {
 			let rangedActions = this.sortActions(this.data.legalActions.filter(action => action.index == unit.index));
 			

@@ -178,6 +178,69 @@ describe("bot tests", function() {
 		expect(botInstance.getFieldscore(field, enemy, unitMiss)).toEqual(13);
 		expect(botInstance.getFieldscore(field, enemy, unitHit)).toEqual(1013);
 	});
+
+	it ('should avoid other units', function() {
+		const field = [
+			[0, 0, 0, 0, 0],
+			[0, 3, 0, 0, 0],
+			[0, 0, 2, 0, 0],
+			[0, 0, 1, 0, 0],
+			[0, 0, 0, 0, 0]
+		];
+		
+		const unitStart = {
+			x:2, 
+			y: 2,
+			index: 0,
+			mine: true
+		};
+
+		const enemy = {
+			x: 1,
+			y: 1,
+			index: 4,
+			mine: false
+		};
+		
+		const actionTake = {
+			type: 'MOVE&BUILD',
+			index: 0,
+			dir1: 'NW',
+			dir2: 'E'
+		};
+		
+		const actionBuild = {
+			type: 'MOVE&BUILD',
+			index: 0,
+			dir1: 'S',
+			dir2: 'SW'
+		};
+		
+		const legalActions = [
+			actionBuild,
+			actionTake
+		];
+		
+		const units = [
+			unitStart,
+			enemy
+		];
+
+		var reader = new FakeReader({
+			rows: field,
+			units,
+			legalActions			
+		});
+		
+		let command = null;
+		var printFunc = function(out) { command = out };
+		
+		var botInstance = new Bot(reader, printFunc, console.log);
+		
+		botInstance.runCycle();
+		
+		expect(command).toEqual('MOVE&BUILD 0 S SW');
+	});
 	
 	it ('should prioritize taking 3-height points (integration)', function() {
 		const field = [
@@ -239,7 +302,7 @@ describe("bot tests", function() {
 		
 		botInstance.runCycle();
 		
-		expect(command).toEqual('MOVE&BUILD 0 NW E');		
+		expect(command).toEqual('MOVE&BUILD 0 NW E');
 	});
 	
 	it('should discourage locked configurations', function(){
