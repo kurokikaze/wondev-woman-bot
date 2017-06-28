@@ -110,7 +110,7 @@ describe("bot tests", function() {
 		
 		var botInstance = new Bot(reader);
 		
-		expect(botInstance.applyAction(field, unit, moveNbuildN.action)).toEqual(moveNbuildN.result);
+		expect(botInstance.applyAction(field, unit, [], moveNbuildN.action)).toEqual(moveNbuildN.result);
 
 		/* NW SE */
 		const moveNWbuildSE = {
@@ -128,7 +128,7 @@ describe("bot tests", function() {
 		
 		var botInstance = new Bot(reader);
 		
-		expect(botInstance.applyAction(field, unit, moveNWbuildSE.action)).toEqual(moveNWbuildSE.result);
+		expect(botInstance.applyAction(field, unit, [], moveNWbuildSE.action)).toEqual(moveNWbuildSE.result);
 
 		/* SE SE */
 		const moveSEbuildSE = {
@@ -146,7 +146,7 @@ describe("bot tests", function() {
 		
 		var botInstance = new Bot(reader);
 		
-		expect(botInstance.applyAction(field, unit, moveSEbuildSE.action)).toEqual(moveSEbuildSE.result);
+		expect(botInstance.applyAction(field, unit, [], moveSEbuildSE.action)).toEqual(moveSEbuildSE.result);
 	});
 	
 	it ('should prioritize taking 3-height points', function() {

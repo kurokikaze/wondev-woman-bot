@@ -15,7 +15,7 @@ class Bot {
 		return Math.sqrt(Math.pow(obj1.x - obj2.x, 2) + Math.pow(obj1.y - obj2.y, 2)) 
 	}
 	
-	getFieldscore(field, enemy, me) {
+	getFieldscore(field, enemies, me) {
 		let score = 0;
 		
 		let locked = true,
@@ -65,21 +65,28 @@ class Bot {
 	sortActions(actions) {
 		let applier = (action) => {
 			let me = this.data.units.filter(e => e.mine)[0];
-			action.result = this.applyAction(this.data.rows, me, action);
+			let enemies = this.data.units.filter(e => !e.mine);
 			
-			return action;
+			let newField = this.applyAction(this.data.rows, me, enemies, action);
+			if (newField) {
+				action.result = newField;
+				
+				return action;				
+			} else {
+				return null;
+			}
 		};
 		
 		let analyzer = (action) => {
 			let me = this.data.units.filter(e => e.index == action.index)[0];
-			let enemy = this.data.units.filter(e => !e.mine)[0];
+			let enemies = this.data.units.filter(e => !e.mine);
 			let newMePosition = this.getMovedPoint(me, action.dir1);
 			
-			action.score = this.getFieldscore(action.result, enemy, newMePosition);
+			action.score = this.getFieldscore(action.result, enemies, newMePosition);
 			return action;
 		};
 		
-		let analyzedActions = actions.map(applier).map(analyzer);
+		let analyzedActions = actions.map(applier).filter(a => !(a === null)).map(analyzer);
 		
 		let sortedActions = this.sortScores(analyzedActions);
 		return sortedActions;
@@ -97,11 +104,17 @@ class Bot {
 		return point;
 	}
 	
-	applyAction(field, me, action) {
+	applyAction(field, me, enemies, action) {
 		let newField = JSON.parse(JSON.stringify(field));
 		let newMe = this.getMovedPoint(me, action.dir1);
 
 		let target = this.getMovedPoint(newMe, action.dir2);
+		
+		let invalidTarget = enemies.filter(e => (e.x == target.x && e.y == target.y));
+		
+		if (invalidTarget.length > 0) {
+			return null;
+		}
 		
 		newField[target.y][target.x]++;
 		
@@ -114,9 +127,7 @@ class Bot {
 	
 	runCycle() {
 		this.data = this.reader.readData();
-		let myUnits = this.data.units.filter(e => e.mine);
-		this.log(myUnits);
-		myUnits.forEach(unit => {
+		this.data.units.filter(e => e.mine).forEach(unit => {
 			let rangedActions = this.sortActions(this.data.legalActions.filter(action => action.index == unit.index));
 			
 			this.giveCommand(this.buildCommand(rangedActions[0]));
