@@ -32,26 +32,28 @@ describe("bot tests", function() {
 	})
 	
 	it('should sort moves by score', function() {
-		var legalMoves = [{
-			score: 3
-		},
-		{
-			score: 1
-		},
-		{
-			score: 2
-		}
+		const legalMoves = [
+			{
+				score: 3
+			},
+			{
+				score: 1
+			},
+			{
+				score: 2
+			}
 		];
 		
-		var goodSortedMoves = [{
-			score: 3
-		},
-		{
-			score: 2
-		},
-		{
-			score: 1
-		}
+		const goodSortedMoves = [
+			{
+				score: 3
+			},
+			{
+				score: 2
+			},
+			{
+				score: 1
+			}
 		];
 		
 		var reader = new FakeReader({});
@@ -78,4 +80,132 @@ describe("bot tests", function() {
 		expect(botInstance.buildCommand(action)).toEqual('MOVE&BUILD 0 N SW');
 	});
 	
+	it('should apply actions to the field', function() {
+		const field = [
+			[0, 0, 0, 0, 0],
+			[0, 0, 0, 0, 0],
+			[0, 0, 0, 0, 0],
+			[0, 0, 0, 0, 0],
+			[0, 0, 0, 0, 0]
+		];
+		
+		const unit = {
+			x: 2,
+			y: 2
+		};
+
+		/* N N */
+		const moveNbuildN = {
+			action: {dir1: 'N', dir2: 'N'},
+			result: [
+				[0, 0, 1, 0, 0],
+				[0, 0, 0, 0, 0],
+				[0, 0, 0, 0, 0],
+				[0, 0, 0, 0, 0],
+				[0, 0, 0, 0, 0]
+			]
+		}
+		
+		var reader = new FakeReader({});
+		
+		var botInstance = new Bot(reader);
+		
+		expect(botInstance.applyAction(field, unit, moveNbuildN.action)).toEqual(moveNbuildN.result);
+
+		/* NW SE */
+		const moveNWbuildSE = {
+			action: {dir1: 'NW', dir2: 'SE'},
+			result: [
+				[0, 0, 0, 0, 0],
+				[0, 0, 0, 0, 0],
+				[0, 0, 1, 0, 0],
+				[0, 0, 0, 0, 0],
+				[0, 0, 0, 0, 0]
+			]
+		}
+		
+		var reader = new FakeReader({});
+		
+		var botInstance = new Bot(reader);
+		
+		expect(botInstance.applyAction(field, unit, moveNWbuildSE.action)).toEqual(moveNWbuildSE.result);
+
+		/* SE SE */
+		const moveSEbuildSE = {
+			action: {dir1: 'SE', dir2: 'SE'},
+			result: [
+				[0, 0, 0, 0, 0],
+				[0, 0, 0, 0, 0],
+				[0, 0, 0, 0, 0],
+				[0, 0, 0, 0, 0],
+				[0, 0, 0, 0, 1]
+			]
+		}
+		
+		var reader = new FakeReader({});
+		
+		var botInstance = new Bot(reader);
+		
+		expect(botInstance.applyAction(field, unit, moveSEbuildSE.action)).toEqual(moveSEbuildSE.result);
+	});
+	
+	it ('should prioritize taking 3-height points', function() {
+		const field = [
+			[0, 0, 0, 0, 0],
+			[0, 3, 0, 0, 0],
+			[0, 0, 0, 0, 0],
+			[0, 0, 0, 0, 0],
+			[0, 0, 0, 0, 0]
+		];
+		
+		const unitMiss = {
+			x:2, y: 2
+		};
+
+		const unitHit = {
+			x:1, y: 1
+		};
+		
+		const enemy = {
+			x: 0,
+			y: 0
+		};
+		
+		var reader = new FakeReader({});
+		
+		var botInstance = new Bot(reader);
+		
+		expect(botInstance.getFieldscore(field, enemy, unitMiss)).toEqual(9);
+		expect(botInstance.getFieldscore(field, enemy, unitHit)).toEqual(1000);
+	});
+	
+	it('should discourage locked configurations', function(){
+		const field = [
+			[0, 0, 0, 0, 0],
+			[0, 4, 4, 4, 0],
+			[0, 4, 0, 4, 0],
+			[0, 4, 4, 4, 0],
+			[0, 0, 0, 0, 0]
+		];
+		
+		const unitLocked = {
+			x:2, y: 2
+		};
+
+		const unitFree = {
+			x:0, y: 3
+		};
+		
+		const enemy = {
+			x: 0,
+			y: 0
+		};
+		
+		var reader = new FakeReader({});
+		
+		var botInstance = new Bot(reader);
+		
+		expect(botInstance.getFieldscore(field, enemy, unitFree)).toEqual(0);
+		expect(botInstance.getFieldscore(field, enemy, unitLocked)).toEqual(-10000);
+	});
 });

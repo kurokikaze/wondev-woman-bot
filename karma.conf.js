@@ -25,11 +25,10 @@ module.exports = function (config) {
             transform: [ 'babelify' ]
         },
 
-
         // use dots reporter, as travis terminal does not support escaping sequences
         // possible values: 'dots', 'progress'
         // CLI --reporters progress
-        reporters: ['progress', 'junit', 'coverage'],
+        reporters: ['progress', 'coverage'],
 
         junitReporter: {
             // will be resolved to basePath (in the same way as files/exclude patterns)
@@ -62,7 +61,7 @@ module.exports = function (config) {
         // - PhantomJS
         // - IE (only Windows)
         // CLI --browsers Chrome,Firefox,Safari
-        browsers: ['PhantomJS'],
+        browsers: ['Chrome'],
 
         // If browser does not capture in given timeout [ms], kill it
         // CLI --capture-timeout 5000
@@ -86,11 +85,10 @@ module.exports = function (config) {
 
         plugins: [
           'karma-jasmine',
-          'karma-phantomjs-launcher',
 		  'browserify',
 		  'karma-browserify',
           'karma-coverage',
-          'karma-junit-reporter',
+		  'karma-chrome-launcher',
           'karma-teamcity-reporter'
         ]
     });

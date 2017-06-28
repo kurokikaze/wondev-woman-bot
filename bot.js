@@ -20,10 +20,11 @@ class Bot {
 	getFieldscore(field, enemy, me) {
 		let score = 0;
 		
-		let locked = true;
+		let locked = true,
+			height1;
 		
-		for (i = -1; i <= 1; i++) {
-			for (j = -1; j <= 1 ;j++) {
+		for (var i = -1; i <= 1; i++) {
+			for (var j = -1; j <= 1 ;j++) {
 				if (field[me.y + i] && ( field[me.y + i][me.x + j] || field[me.y + i][me.x + j] === 0)) {
 					height1 = field[me.y + i][me.x + j];
 				} else {
@@ -39,21 +40,15 @@ class Bot {
 			}
 		}
 
-		if (field[me.y][me.x] === 3) {
+		console.log('Point:', me, field[me.y][me.x]);
+		if (field[me.y][me.x] === 3) {			
 			score += 1000;
 		}
 
 		if (locked) {
 			score -= 10000;
-			printErr('Locked conf');
-			printErr(JSON.stringify(field), JSON.stringify(me));
 		}
 
-		if (field[me.y][me.x] === 3) {
-			printErr(JSON.stringify(field), JSON.stringify(me));
-			printErr('Scoring conf, score: ' + score);
-		}
-			
 		return score;
 	}
 	
@@ -102,12 +97,11 @@ class Bot {
 	}
 	
 	applyAction(field, me, action) {
-		let newField = Object.assign([], field);
-		me = this.getMovedPoint(me, action.dir1);
+		let newField = JSON.parse(JSON.stringify(field));
+		console.log(action.dir1, action.dir2, newField);
+		let newMe = this.getMovedPoint(me, action.dir1);
 
-		let target = {
-			x: me.x, y: me.y};
-		target = this.getMovedPoint(target, action.dir2);
+		let target = this.getMovedPoint(newMe, action.dir2);
 		
 		newField[target.y][target.x]++;
 		
