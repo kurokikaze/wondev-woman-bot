@@ -9,7 +9,7 @@ class Bot {
 	
 	buildCommand(action) {
 		let commandBody = action.type + ' ' + action.index + ' ' + action.dir1 + ' ' + action.dir2;
-		if (action.sig) { command.body += ' "' + action.sig + '"'; }
+		if (action.sig) { commandBody += ' "' + action.sig + '"'; }
 		
 		return commandBody;
 	}
